@@ -1,0 +1,6 @@
+{
+  "name": "CalculaProporcion — Regla de Tres, Porcentajes Inversos y Reparto",
+  "description": "Calculadora online gratuita y exacta de porcentajes inversos, precio original antes de descuento, IVA, reparto proporcional por porcentajes o pesos y regla de tres directa e inversa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

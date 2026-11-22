@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CalculaProporcion — Porcentaje Inverso, Reparto y Regla de Tres</title>
+    <meta
+      name="description"
+      content="Calcula al instante el precio original antes de un descuento, quita o añade IVA, reparte gastos por porcentajes o pesos al céntimo y resuelve reglas de tres directas e inversas."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CalculaProporcion" />
+    <meta property="og:title" content="CalculaProporcion — Porcentaje Inverso, Reparto y Regla de Tres" />
+    <meta
+      property="og:description"
+      content="Calculadora determinista con desarrollo paso a paso: precio original sin descuento, cálculo de IVA, reparto proporcional al céntimo y regla de tres directa e inversa."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CalculaProporcion — Porcentaje Inverso, Reparto y Regla de Tres" />
+    <meta
+      name="twitter:description"
+      content="Calcula el precio original antes de descuento, quita el IVA, reparte gastos por porcentajes o pesos y resuelve reglas de tres paso a paso."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..600&family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "#calculaproporcion-app",
+            "name": "CalculaProporcion",
+            "alternateName": "CalculaProporcion — Regla de Tres, Porcentajes Inversos y Reparto",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "All",
+            "inLanguage": "es",
+            "browserRequirements": "Requires JavaScript",
+            "description": "Calculadora web gratuita para resolver porcentajes inversos, precio original antes de descuento, desglose de IVA, reparto proporcional con cuadre al céntimo y regla de tres directa e inversa.",
+            "featureList": [
+              "Cálculo de porcentaje inverso y precio original antes de descuento",
+              "Cálculo para quitar o añadir IVA y variación porcentual",
+              "Reparto proporcional por porcentajes o pesos con ajuste al céntimo",
+              "Regla de tres directa e inversa con desarrollo paso a paso",
+              "Compartición mediante enlace codificado y resumen para WhatsApp"
+            ],
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "EUR"
+            }
+          },
+          {
+            "@type": "HowTo",
+            "name": "Cómo calcular el precio original antes de un descuento (porcentaje inverso)",
+            "description": "Método exacto para obtener el precio inicial de un producto conociendo el precio final pagado y el porcentaje de descuento aplicado.",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Convierte el porcentaje de descuento a proporción decimal",
+                "text": "Divide el porcentaje de descuento entre 100. Por ejemplo, un 20 % equivale a 0,20."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Calcula el factor restante",
+                "text": "Resta esa proporción a 1: 1 - 0,20 = 0,80. Significa que el precio final representa el 80 % del precio original."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Divide el precio final entre el factor restante",
+                "text": "Divide el precio pagado entre 0,80. Si pagaste 80 €, el cálculo es 80 / 0,80 = 100 € de precio original (y no 96 € como ocurre al sumar el 20 % directamente)."
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "¿Cómo calcular el precio original antes de un descuento?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Para hallar el precio original antes de un descuento debes dividir el precio final entre (1 - porcentaje / 100). Por ejemplo, si pagaste 70 € con un 30 % de descuento, divide 70 entre 0,70 y obtendrás 100 €. Nunca sumes el 30 % al precio rebajado, porque ese 30 % se calcularía sobre una base menor."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cómo quitar el 21 % de IVA a un precio final?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Para quitar el 21 % de IVA a un importe total con impuestos incluidos, divide el precio total entre 1,21. Si una factura es de 121 €, la base imponible es 121 / 1,21 = 100 € y la cuota de IVA corresponde a 21 €."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cómo repartir un gasto entre varias personas según porcentaje o días y que cuadre al céntimo?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Multiplica el gasto total por la proporción de cada participante (su porcentaje dividido entre 100, o su peso dividido entre la suma de pesos). Para evitar descuadres de céntimos por redondeo, se aplica el método de resto mayor asignando los céntimos sobrantes a las partes con mayor residuo decimal."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "¿Cuándo usar regla de tres directa y cuándo regla de tres inversa?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Usa regla de tres directa cuando ambas magnitudes aumentan o disminuyen en el mismo sentido (por ejemplo, más ingredientes para más comensales): X = (B × C) / A. Usa regla de tres inversa cuando al aumentar una magnitud la otra disminuye (por ejemplo, más operarios tardan menos días): X = (A × B) / C."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body class="bg-[#F3EFE6] text-[#18181B] antialiased selection:bg-[#C2410C]/15 selection:text-[#C2410C]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
