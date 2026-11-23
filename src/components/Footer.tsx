@@ -1,10 +1,12 @@
+import { TranslationDictionary } from '../i18n';
 import { ModuleId } from '../types/calculator';
 
 interface FooterProps {
   onSelectModule: (module: ModuleId) => void;
+  t: TranslationDictionary;
 }
 
-export function Footer({ onSelectModule }: FooterProps) {
+export function Footer({ onSelectModule, t }: FooterProps) {
   const handleNav = (module: ModuleId) => {
     onSelectModule(module);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -15,19 +17,17 @@ export function Footer({ onSelectModule }: FooterProps) {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <p className="font-display text-base font-bold text-[#18181B]">CalculaProporcion</p>
-            <p className="text-xs text-[#52524E]">
-              Cálculos matemáticos deterministas 100 % locales en tu navegador · Regla de tres, porcentaje inverso y reparto al céntimo.
-            </p>
+            <p className="font-display text-base font-bold text-[#18181B]">{t.meta.siteName}</p>
+            <p className="text-xs text-[#52524E]">{t.footer.tagline}</p>
           </div>
 
-          <nav aria-label="Accesos directos del pie" className="no-print flex flex-wrap items-center gap-4 text-xs font-medium text-[#52524E]">
+          <nav aria-label={t.footer.navAria} className="no-print flex flex-wrap items-center gap-4 text-xs font-medium text-[#52524E]">
             <button
               type="button"
               onClick={() => handleNav('percentages')}
               className="hover:text-[#C2410C] transition-colors cursor-pointer"
             >
-              Porcentaje inverso e IVA
+              {t.footer.linkPercentages}
             </button>
             <span aria-hidden="true" className="text-[#BDB5A6]">·</span>
             <button
@@ -35,7 +35,7 @@ export function Footer({ onSelectModule }: FooterProps) {
               onClick={() => handleNav('distribution')}
               className="hover:text-[#C2410C] transition-colors cursor-pointer"
             >
-              Reparto proporcional
+              {t.footer.linkDistribution}
             </button>
             <span aria-hidden="true" className="text-[#BDB5A6]">·</span>
             <button
@@ -43,7 +43,7 @@ export function Footer({ onSelectModule }: FooterProps) {
               onClick={() => handleNav('rule-of-three')}
               className="hover:text-[#C2410C] transition-colors cursor-pointer"
             >
-              Regla de tres directa e inversa
+              {t.footer.linkRuleOfThree}
             </button>
           </nav>
         </div>

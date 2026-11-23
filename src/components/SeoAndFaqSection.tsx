@@ -1,53 +1,21 @@
 import { useState } from 'react';
 import { ChevronDown, ExternalLink } from 'lucide-react';
-import { COMMON_MISTAKES, FAQ_ITEMS, WORKED_EXAMPLES } from '../data/seoContent';
+import { TranslationDictionary } from '../i18n';
 import { ModuleId } from '../types/calculator';
 
 interface SeoAndFaqSectionProps {
   onLoadWorkedExample: (exampleId: string) => void;
   onSelectModule: (module: ModuleId) => void;
+  t: TranslationDictionary;
 }
-
-interface RecommendedResource {
-  title: string;
-  category: string;
-  description: string;
-  href: string;
-  ctaLabel: string;
-}
-
-const RECOMMENDED_RESOURCES: RecommendedResource[] = [
-  {
-    title: 'Calculadoras científicas y financieras de escritorio',
-    category: 'Material de oficina',
-    description:
-      'Modelos solares con doble línea de pantalla y tecla de porcentaje directo para comercios, autónomos y estudiantes.',
-    href: 'https://www.amazon.es/s?k=calculadora+financiera+oficina',
-    ctaLabel: 'Ver modelos recomendados',
-  },
-  {
-    title: 'Software de facturación y desglose automático de IVA',
-    category: 'Gestión para autónomos',
-    description:
-      'Automatiza presupuestos, facturas recurrentes y cálculo de impuestos trimestrales sin hojas manuales.',
-    href: 'https://www.holded.com/es',
-    ctaLabel: 'Explorar herramienta',
-  },
-  {
-    title: 'Hojas de cálculo colaborativas en la nube',
-    category: 'Productividad',
-    description:
-      'Crea plantillas de reparto mensual de gastos compartidos y presupuestos con fórmulas en tiempo real.',
-    href: 'https://workspace.google.com/intl/es/products/sheets/',
-    ctaLabel: 'Abrir Google Sheets',
-  },
-];
 
 export function SeoAndFaqSection({
   onLoadWorkedExample,
   onSelectModule,
+  t,
 }: SeoAndFaqSectionProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const s = t.seoSection;
 
   return (
     <section id="guias-y-faq" className="space-y-14 pt-6">
@@ -55,15 +23,13 @@ export function SeoAndFaqSection({
       <div className="space-y-5">
         <div className="border-t-2 border-[#18181B] pt-4 space-y-1.5">
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#18181B]">
-            Ejemplos resueltos paso a paso
+            {s.examplesTitle}
           </h2>
-          <p className="text-sm text-[#52524E] max-w-3xl">
-            Casos prácticos habituales de porcentaje inverso, desglose de IVA, reparto por días y regla de tres. Pulsa en cualquiera para cargarlo en la calculadora.
-          </p>
+          <p className="text-sm text-[#52524E] max-w-3xl">{s.examplesSubtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {WORKED_EXAMPLES.map((ex, idx) => (
+          {s.workedExamples.map((ex, idx) => (
             <article
               key={ex.id}
               className="rounded-md border border-[#D6CFC2] bg-[#FCFBF7] p-5 flex flex-col justify-between gap-4 print-clean-card"
@@ -78,22 +44,22 @@ export function SeoAndFaqSection({
                   {ex.formula}
                 </div>
                 <ol className="space-y-1 text-xs text-[#52524E] list-decimal list-inside leading-relaxed tabular-nums">
-                  {ex.steps.map((s, sIdx) => (
-                    <li key={sIdx}>{s}</li>
+                  {ex.steps.map((step, sIdx) => (
+                    <li key={sIdx}>{step}</li>
                   ))}
                 </ol>
               </div>
 
               <div className="flex items-center justify-between gap-3 pt-3 border-t border-[#D6CFC2]">
                 <span className="font-mono-num text-xs font-bold text-[#0F766E]">
-                  Resultado: {ex.answer}
+                  {s.resultPrefix}: {ex.answer}
                 </span>
                 <button
                   type="button"
                   onClick={() => onLoadWorkedExample(ex.id)}
                   className="no-print text-xs font-semibold text-[#C2410C] hover:text-[#9A3412] underline underline-offset-2 whitespace-nowrap cursor-pointer"
                 >
-                  Cargar en calculadora
+                  {s.loadInCalculator}
                 </button>
               </div>
             </article>
@@ -105,15 +71,13 @@ export function SeoAndFaqSection({
       <div className="space-y-5">
         <div className="border-t-2 border-[#18181B] pt-4 space-y-1.5">
           <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#18181B]">
-            Errores frecuentes al calcular porcentajes y proporciones
+            {s.mistakesTitle}
           </h2>
-          <p className="text-sm text-[#52524E] max-w-3xl">
-            Por qué fallan los atajos mentales más comunes y cómo verificar cada operación en segundos.
-          </p>
+          <p className="text-sm text-[#52524E] max-w-3xl">{s.mistakesSubtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {COMMON_MISTAKES.map((mistake) => (
+          {s.commonMistakes.map((mistake) => (
             <article
               key={mistake.title}
               className="rounded-md border border-[#D6CFC2] bg-[#FCFBF7] p-5 space-y-3 print-clean-card"
@@ -121,10 +85,10 @@ export function SeoAndFaqSection({
               <h3 className="font-display text-base font-bold text-[#18181B]">{mistake.title}</h3>
               <div className="space-y-2 text-xs leading-relaxed">
                 <p className="text-[#92400E] bg-[#FEF3C7]/60 border border-[#D97706]/30 rounded-sm p-2.5">
-                  <strong>Error habitual:</strong> {mistake.wrongApproach}
+                  <strong>{s.wrongLabel}:</strong> {mistake.wrongApproach}
                 </p>
                 <p className="text-[#115E59] bg-[#0F766E]/10 border border-[#0F766E]/30 rounded-sm p-2.5">
-                  <strong>Método exacto:</strong> {mistake.rightApproach}
+                  <strong>{s.rightLabel}:</strong> {mistake.rightApproach}
                 </p>
               </div>
               <p className="text-xs text-[#52524E] leading-relaxed tabular-nums">
@@ -140,11 +104,9 @@ export function SeoAndFaqSection({
         <div className="border-t-2 border-[#18181B] pt-4 flex flex-wrap items-end justify-between gap-4">
           <div className="space-y-1.5">
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#18181B]">
-              Preguntas frecuentes sobre porcentajes, reparto y regla de tres
+              {s.faqTitle}
             </h2>
-            <p className="text-sm text-[#52524E]">
-              Respuestas directas a las dudas más buscadas sobre cálculo comercial y doméstico.
-            </p>
+            <p className="text-sm text-[#52524E]">{s.faqSubtitle}</p>
           </div>
           <div className="no-print flex items-center gap-3 text-xs font-semibold text-[#C2410C]">
             <button
@@ -155,7 +117,7 @@ export function SeoAndFaqSection({
               }}
               className="hover:underline cursor-pointer"
             >
-              Ir a Porcentajes
+              {s.goPercentages}
             </button>
             <span aria-hidden="true" className="text-[#BDB5A6]">·</span>
             <button
@@ -166,7 +128,7 @@ export function SeoAndFaqSection({
               }}
               className="hover:underline cursor-pointer"
             >
-              Ir a Reparto
+              {s.goDistribution}
             </button>
             <span aria-hidden="true" className="text-[#BDB5A6]">·</span>
             <button
@@ -177,13 +139,13 @@ export function SeoAndFaqSection({
               }}
               className="hover:underline cursor-pointer"
             >
-              Ir a Regla de Tres
+              {s.goRuleOfThree}
             </button>
           </div>
         </div>
 
         <div className="divide-y divide-[#D6CFC2] rounded-md border border-[#D6CFC2] bg-[#FCFBF7] print-clean-card">
-          {FAQ_ITEMS.map((faq, idx) => {
+          {s.faqItems.map((faq, idx) => {
             const isOpen = openFaqIndex === idx;
             return (
               <div key={faq.question}>
@@ -216,20 +178,16 @@ export function SeoAndFaqSection({
 
       {/* Discreet Affiliate / Recommended Resources Block */}
       <aside
-        aria-label="Recursos y herramientas recomendadas"
+        aria-label={s.resourcesTitle}
         className="no-print rounded-md border border-[#D6CFC2] bg-[#FCFBF7] p-5 sm:p-6 space-y-4"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#D6CFC2] pb-3">
-          <h2 className="font-display text-lg font-bold text-[#18181B]">
-            Recursos y herramientas recomendadas
-          </h2>
-          <p className="text-xs text-[#52524E]">
-            Selección editorial · Enlaces externos y afiliados contextuales
-          </p>
+          <h2 className="font-display text-lg font-bold text-[#18181B]">{s.resourcesTitle}</h2>
+          <p className="text-xs text-[#52524E]">{s.resourcesDisclosure}</p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {RECOMMENDED_RESOURCES.map((item) => (
+          {s.resources.map((item) => (
             <a
               key={item.title}
               href={item.href}

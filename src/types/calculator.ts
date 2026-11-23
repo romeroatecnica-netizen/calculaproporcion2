@@ -1,3 +1,5 @@
+import { SupportedLang } from '../config/seo';
+
 export type ModuleId = 'percentages' | 'distribution' | 'rule-of-three';
 
 export type NumberFormatMode = 'es' | 'us';
@@ -48,6 +50,7 @@ export interface RuleOfThreeState {
 }
 
 export interface AppState {
+  lang: SupportedLang;
   activeModule: ModuleId;
   numberFormat: NumberFormatMode;
   currency: CurrencyMode;

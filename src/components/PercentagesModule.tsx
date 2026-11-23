@@ -1,4 +1,5 @@
 import { AlertTriangle, ArrowRightLeft, CheckCircle2, Info } from 'lucide-react';
+import { TranslationDictionary } from '../i18n';
 import {
   CurrencyMode,
   NumberFormatMode,
@@ -17,6 +18,7 @@ interface PercentagesModuleProps {
   whatsappCopied: boolean;
   onShareLink: () => void;
   linkCopied: boolean;
+  t: TranslationDictionary;
 }
 
 interface PresetOption {
@@ -27,13 +29,6 @@ interface PresetOption {
   fallbackAmount: string;
 }
 
-const PRESETS: PresetOption[] = [
-  { id: 'dto-20', label: 'Precio tras 20 % dto.', subMode: 'inverse-discount', rate: '20', fallbackAmount: '80' },
-  { id: 'dto-30', label: 'Precio tras 30 % dto.', subMode: 'inverse-discount', rate: '30', fallbackAmount: '70' },
-  { id: 'iva-21', label: 'Quitar 21 % IVA', subMode: 'tax-remove', rate: '21', fallbackAmount: '121' },
-  { id: 'iva-10', label: 'Quitar 10 % IVA', subMode: 'tax-remove', rate: '10', fallbackAmount: '110' },
-];
-
 export function PercentagesModule({
   state,
   onChange,
@@ -43,9 +38,18 @@ export function PercentagesModule({
   whatsappCopied,
   onShareLink,
   linkCopied,
+  t,
 }: PercentagesModuleProps) {
-  const result = calculatePercentages(state, numberFormat, currency);
+  const result = calculatePercentages(state, numberFormat, currency, t);
   const currencySymbol = getCurrencySymbol(currency);
+  const ui = t.percentagesUi;
+
+  const presets: PresetOption[] = [
+    { id: 'dto-20', label: ui.presets.dto20, subMode: 'inverse-discount', rate: '20', fallbackAmount: '80' },
+    { id: 'dto-30', label: ui.presets.dto30, subMode: 'inverse-discount', rate: '30', fallbackAmount: '70' },
+    { id: 'iva-21', label: ui.presets.iva21, subMode: 'tax-remove', rate: '21', fallbackAmount: '121' },
+    { id: 'iva-10', label: ui.presets.iva10, subMode: 'tax-remove', rate: '10', fallbackAmount: '110' },
+  ];
 
   const handlePresetClick = (preset: PresetOption) => {
     const parsedCurrent = parseInputNumber(state.amount);
@@ -76,7 +80,7 @@ export function PercentagesModule({
       : ['4', '10', '21', '7', '15'];
 
   return (
-    <section aria-label="Calculadora de porcentajes directos e inversos" className="space-y-4">
+    <section aria-label={ui.sectionAria} className="space-y-4">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-stretch">
         {/* Left/Center Ivory Ledger Worksheet */}
         <div className="lg:col-span-7 rounded-md border border-[#D6CFC2] bg-[#FCFBF7] p-5 sm:p-6 space-y-6 print-clean-card">
@@ -84,14 +88,14 @@ export function PercentagesModule({
           <div className="space-y-3">
             <div
               role="tablist"
-              aria-label="Tipo de cálculo de porcentaje"
+              aria-label={ui.subModeAria}
               className="grid grid-cols-2 gap-1 rounded-sm border border-[#D6CFC2] bg-[#F3EFE6] p-1 sm:grid-cols-4"
             >
               {[
-                { id: 'inverse-discount' as const, label: 'Descuento inverso' },
-                { id: 'tax-remove' as const, label: 'Quitar / Añadir IVA' },
-                { id: 'part-of-whole' as const, label: 'Qué % es A de B' },
-                { id: 'pct-change' as const, label: 'Variación %' },
+                { id: 'inverse-discount' as const, label: ui.tabs.inverseDiscount },
+                { id: 'tax-remove' as const, label: ui.tabs.tax },
+                { id: 'part-of-whole' as const, label: ui.tabs.partOfWhole },
+                { id: 'pct-change' as const, label: ui.tabs.pctChange },
               ].map((tab) => {
                 const active =
                   tab.id === 'tax-remove'
@@ -118,8 +122,8 @@ export function PercentagesModule({
 
             {/* Quick Presets */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="text-xs font-medium text-[#52524E]">Accesos rápidos:</span>
-              {PRESETS.map((preset) => {
+              <span className="text-xs font-medium text-[#52524E]">{ui.presetsLabel}</span>
+              {presets.map((preset) => {
                 const isSelected = state.activePresetId === preset.id;
                 return (
                   <button
@@ -151,7 +155,7 @@ export function PercentagesModule({
                     : 'text-[#52524E] hover:text-[#18181B]'
                 }`}
               >
-                Quitar IVA (Total → Base)
+                {ui.taxToggle.remove}
               </button>
               <button
                 type="button"
@@ -162,7 +166,7 @@ export function PercentagesModule({
                     : 'text-[#52524E] hover:text-[#18181B]'
                 }`}
               >
-                Añadir IVA (Base → Total)
+                {ui.taxToggle.add}
               </button>
             </div>
           )}
@@ -172,9 +176,9 @@ export function PercentagesModule({
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 border-t border-[#D6CFC2] pt-5">
               <div>
                 <label htmlFor="pct-amount" className="block text-sm font-semibold text-[#18181B] mb-1.5">
-                  {state.subMode === 'inverse-discount' && 'Precio final pagado'}
-                  {state.subMode === 'tax-remove' && 'Importe total (con IVA)'}
-                  {state.subMode === 'tax-add' && 'Importe base (sin IVA)'}
+                  {state.subMode === 'inverse-discount' && ui.labels.finalPaid}
+                  {state.subMode === 'tax-remove' && ui.labels.totalWithTax}
+                  {state.subMode === 'tax-add' && ui.labels.netBase}
                 </label>
                 <div className="relative">
                   <input
@@ -185,7 +189,7 @@ export function PercentagesModule({
                     onChange={(e) =>
                       onChange({ ...state, amount: e.target.value, activePresetId: null })
                     }
-                    placeholder="Ej. 80,00"
+                    placeholder={ui.placeholders.amount}
                     className="font-mono-num w-full rounded-sm border border-[#BDB5A6] bg-[#FFFFFF] px-4 py-3 pr-12 text-lg font-semibold text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#C2410C] focus:outline-none focus:ring-2 focus:ring-[#C2410C]/20"
                   />
                   {currencySymbol && (
@@ -195,15 +199,15 @@ export function PercentagesModule({
                   )}
                 </div>
                 <p className="mt-1.5 text-xs text-[#52524E]">
-                  {state.subMode === 'inverse-discount' && 'Importe abonado tras aplicarse la rebaja.'}
-                  {state.subMode === 'tax-remove' && 'Importe bruto final del ticket o factura.'}
-                  {state.subMode === 'tax-add' && 'Base imponible neta antes de impuestos.'}
+                  {state.subMode === 'inverse-discount' && ui.hints.inverseDiscount}
+                  {state.subMode === 'tax-remove' && ui.hints.taxRemove}
+                  {state.subMode === 'tax-add' && ui.hints.taxAdd}
                 </p>
               </div>
 
               <div>
                 <label htmlFor="pct-rate" className="block text-sm font-semibold text-[#18181B] mb-1.5">
-                  {state.subMode === 'inverse-discount' ? 'Descuento aplicado' : 'Porcentaje de impuesto / IVA'}
+                  {state.subMode === 'inverse-discount' ? ui.labels.discountApplied : ui.labels.taxRate}
                 </label>
                 <div className="relative">
                   <input
@@ -214,7 +218,7 @@ export function PercentagesModule({
                     onChange={(e) =>
                       onChange({ ...state, rate: e.target.value, activePresetId: null })
                     }
-                    placeholder="Ej. 20"
+                    placeholder={ui.placeholders.rate}
                     className="font-mono-num w-full rounded-sm border border-[#BDB5A6] bg-[#FFFFFF] px-4 py-3 pr-10 text-lg font-semibold text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#C2410C] focus:outline-none focus:ring-2 focus:ring-[#C2410C]/20"
                   />
                   <span className="font-mono-num pointer-events-none absolute inset-y-0 right-4 flex items-center text-sm font-semibold text-[#52524E]">
@@ -244,7 +248,7 @@ export function PercentagesModule({
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="pct-val-a" className="block text-sm font-semibold text-[#18181B] mb-1.5">
-                    {state.subMode === 'part-of-whole' ? 'Cantidad parcial (A)' : 'Valor inicial (A)'}
+                    {state.subMode === 'part-of-whole' ? ui.labels.partA : ui.labels.initialA}
                   </label>
                   <input
                     id="pct-val-a"
@@ -252,14 +256,14 @@ export function PercentagesModule({
                     inputMode="decimal"
                     value={state.valueA}
                     onChange={(e) => onChange({ ...state, valueA: e.target.value })}
-                    placeholder="Ej. 35"
+                    placeholder={ui.placeholders.valA}
                     className="font-mono-num w-full rounded-sm border border-[#BDB5A6] bg-[#FFFFFF] px-4 py-3 text-lg font-semibold text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#C2410C] focus:outline-none focus:ring-2 focus:ring-[#C2410C]/20"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="pct-val-b" className="block text-sm font-semibold text-[#18181B] mb-1.5">
-                    {state.subMode === 'part-of-whole' ? 'Total de referencia (B)' : 'Valor final (B)'}
+                    {state.subMode === 'part-of-whole' ? ui.labels.wholeB : ui.labels.finalB}
                   </label>
                   <input
                     id="pct-val-b"
@@ -267,7 +271,7 @@ export function PercentagesModule({
                     inputMode="decimal"
                     value={state.valueB}
                     onChange={(e) => onChange({ ...state, valueB: e.target.value })}
-                    placeholder="Ej. 140"
+                    placeholder={ui.placeholders.valB}
                     className="font-mono-num w-full rounded-sm border border-[#BDB5A6] bg-[#FFFFFF] px-4 py-3 text-lg font-semibold text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#C2410C] focus:outline-none focus:ring-2 focus:ring-[#C2410C]/20"
                   />
                 </div>
@@ -286,7 +290,7 @@ export function PercentagesModule({
                   className="inline-flex items-center gap-1.5 rounded-sm border border-[#D6CFC2] bg-[#F3EFE6] px-3 py-1.5 text-xs font-medium text-[#3F3F46] hover:text-[#18181B] hover:border-[#18181B] transition-colors cursor-pointer"
                 >
                   <ArrowRightLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Intercambiar A y B</span>
+                  <span>{ui.swapAB}</span>
                 </button>
               </div>
             </div>
@@ -313,7 +317,7 @@ export function PercentagesModule({
                 <Info className="h-4 w-4 text-[#B45309] shrink-0 mt-0.5" aria-hidden="true" />
                 <div className="space-y-1 text-xs text-[#78350F] leading-relaxed">
                   <p className="font-semibold text-[#92400E]">
-                    Por qué no es {result.commonMistakeNote.wrongValue}
+                    {ui.avoidClassicError} {result.commonMistakeNote.wrongValue}
                   </p>
                   <p>{result.commonMistakeNote.explanation}</p>
                 </div>
@@ -328,7 +332,7 @@ export function PercentagesModule({
             <div className="rounded-sm border border-[#FBBF24]/40 bg-[#FBBF24]/10 p-4 flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-[#FBBF24] shrink-0 mt-0.5" aria-hidden="true" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-[#FDE68A]">Revisa los datos introducidos</p>
+                <p className="text-sm font-semibold text-[#FDE68A]">{ui.checkInputsTitle}</p>
                 <p className="text-xs text-[#FEF3C7]/90 leading-relaxed">{result.error}</p>
               </div>
             </div>
@@ -372,7 +376,7 @@ export function PercentagesModule({
 
               {/* Formula & Step-by-Step */}
               <div className="space-y-2.5">
-                <p className="text-xs font-semibold text-[#E4E4E7]">Fórmula y desarrollo paso a paso</p>
+                <p className="text-xs font-semibold text-[#E4E4E7]">{ui.formulaStepsTitle}</p>
                 <div className="font-mono-num rounded-sm bg-[#0B0D0F] border border-white/10 px-3 py-2 text-xs font-medium text-[#FDBA74]">
                   {result.formulaText}
                 </div>
@@ -391,6 +395,7 @@ export function PercentagesModule({
             onShareLink={onShareLink}
             linkCopied={linkCopied}
             disabled={!result.valid}
+            t={t}
           />
         </div>
       </div>

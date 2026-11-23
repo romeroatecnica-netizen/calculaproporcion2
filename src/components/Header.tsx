@@ -1,4 +1,5 @@
 import { Check, Share2 } from 'lucide-react';
+import { TranslationDictionary } from '../i18n';
 import { ModuleId } from '../types/calculator';
 
 interface HeaderProps {
@@ -6,6 +7,7 @@ interface HeaderProps {
   onSelectModule: (module: ModuleId) => void;
   onShareLink: () => void;
   linkCopied: boolean;
+  t: TranslationDictionary;
 }
 
 export function Header({
@@ -13,11 +15,12 @@ export function Header({
   onSelectModule,
   onShareLink,
   linkCopied,
+  t,
 }: HeaderProps) {
   const navItems: Array<{ id: ModuleId; label: string }> = [
-    { id: 'percentages', label: 'Porcentajes e IVA' },
-    { id: 'distribution', label: 'Reparto' },
-    { id: 'rule-of-three', label: 'Regla de Tres' },
+    { id: 'percentages', label: t.header.navPercentages },
+    { id: 'distribution', label: t.header.navDistribution },
+    { id: 'rule-of-three', label: t.header.navRuleOfThree },
   ];
 
   return (
@@ -32,11 +35,11 @@ export function Header({
           }}
           className="font-display text-xl font-bold tracking-tight text-[#18181B] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C2410C] rounded-xs"
         >
-          CalculaProporcion
+          {t.meta.siteName}
         </a>
 
         {/* Zone 2: 4 concise single-line nav links */}
-        <nav aria-label="Módulos de cálculo" className="hidden md:flex items-center gap-7 text-sm font-medium">
+        <nav aria-label={t.header.navAriaLabel} className="hidden md:flex items-center gap-7 text-sm font-medium">
           {navItems.map((item) => {
             const isActive = activeModule === item.id;
             return (
@@ -64,7 +67,7 @@ export function Header({
             href="#guias-y-faq"
             className="py-1.5 text-[#52524E] hover:text-[#18181B] transition-colors duration-150 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C2410C] rounded-xs"
           >
-            Guías y FAQ
+            {t.header.navGuidesFaq}
           </a>
         </nav>
 
@@ -82,12 +85,12 @@ export function Header({
             {linkCopied ? (
               <>
                 <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>Enlace copiado</span>
+                <span>{t.header.linkCopied}</span>
               </>
             ) : (
               <>
                 <Share2 className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>Compartir cálculo</span>
+                <span>{t.header.shareCalculation}</span>
               </>
             )}
           </button>

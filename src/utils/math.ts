@@ -1,3 +1,4 @@
+import { TranslationDictionary } from '../i18n';
 import {
   CurrencyMode,
   DistributionState,
@@ -20,10 +21,8 @@ export function parseInputNumber(raw: string): number | null {
     const lastDot = cleaned.lastIndexOf('.');
     const lastComma = cleaned.lastIndexOf(',');
     if (lastComma > lastDot) {
-      // Format like 1.234,56
       normalized = cleaned.replace(/\./g, '').replace(',', '.');
     } else {
-      // Format like 1,234.56
       normalized = cleaned.replace(/,/g, '');
     }
   } else if (hasComma) {
@@ -53,13 +52,11 @@ export function formatNumber(
   if (!Number.isFinite(value)) return '—';
   const fixed = Math.abs(value) < 1e-12 ? 0 : value;
   const locale = format === 'es' ? 'es-ES' : 'en-US';
-  const formatted = new Intl.NumberFormat(locale, {
+  return new Intl.NumberFormat(locale, {
     minimumFractionDigits: trimTrailingZeros ? 0 : decimals,
     maximumFractionDigits: decimals,
     useGrouping: true,
   }).format(fixed);
-
-  return formatted;
 }
 
 export function formatMoney(
@@ -100,22 +97,25 @@ export interface PercentageResult {
 export function calculatePercentages(
   state: PercentagesState,
   format: NumberFormatMode,
-  currency: CurrencyMode
+  currency: CurrencyMode,
+  t: TranslationDictionary
 ): PercentageResult {
   const { subMode, amount, rate, valueA, valueB } = state;
+  const m = t.percentagesMath;
 
   if (subMode === 'inverse-discount') {
     const finalPrice = parseInputNumber(amount);
     const discountPct = parseInputNumber(rate);
+    const d = m.inverseDiscount;
 
     if (finalPrice === null || discountPct === null) {
       return {
         valid: false,
-        error: 'Introduce el precio final pagado y el porcentaje de descuento para calcular el precio original.',
-        primaryLabel: 'Precio original antes del descuento',
+        error: d.missingError,
+        primaryLabel: d.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Precio original = Precio final ÷ (1 − Descuento / 100)',
+        formulaText: d.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -124,11 +124,11 @@ export function calculatePercentages(
     if (finalPrice < 0) {
       return {
         valid: false,
-        error: 'El precio final no puede ser negativo.',
-        primaryLabel: 'Precio original antes del descuento',
+        error: d.negativePriceError,
+        primaryLabel: d.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Precio original = Precio final ÷ (1 − Descuento / 100)',
+        formulaText: d.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -137,14 +137,11 @@ export function calculatePercentages(
     if (discountPct < 0 || discountPct >= 100) {
       return {
         valid: false,
-        error:
-          discountPct >= 100
-            ? 'El descuento no puede ser igual o superior al 100 % (implicaría división entre cero o precio negativo).'
-            : 'El porcentaje de descuento debe ser igual o mayor que 0 %.',
-        primaryLabel: 'Precio original antes del descuento',
+        error: discountPct >= 100 ? d.over100Error : d.negativePctError,
+        primaryLabel: d.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Precio original = Precio final ÷ (1 − Descuento / 100)',
+        formulaText: d.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -155,33 +152,52 @@ export function calculatePercentages(
     const savings = originalPrice - finalPrice;
     const paidPct = 100 - discountPct;
 
-    // Common mistake: adding discount % directly to final price
     const wrongOriginal = finalPrice * (1 + discountPct / 100);
     const mistakeDiff = originalPrice - wrongOriginal;
 
+    const discountStr = formatNumber(discountPct, format, 2, true);
+    const paidPctStr = formatNumber(paidPct, format, 2, true);
+    const factorStr = formatNumber(factor, format, 4, true);
+    const finalMoneyStr = formatMoney(finalPrice, format, currency, 2);
+    const originalMoneyStr = formatMoney(originalPrice, format, currency, 2);
+    const savingsMoneyStr = formatMoney(savings, format, currency, 2);
+    const wrongMoneyStr = formatMoney(wrongOriginal, format, currency, 2);
+    const diffMoneyStr = formatMoney(Math.abs(mistakeDiff), format, currency, 2);
+
     return {
       valid: true,
-      primaryLabel: 'Precio original antes del descuento',
-      primaryValue: formatMoney(originalPrice, format, currency, 2),
+      primaryLabel: d.primaryLabel,
+      primaryValue: originalMoneyStr,
       secondaryMetrics: [
-        { label: 'Ahorro real obtenido', value: formatMoney(savings, format, currency, 2), tone: 'teal' },
-        { label: 'Porcentaje pagado del total', value: `${formatNumber(paidPct, format, 2, true)} %` },
-        { label: 'Factor divisor aplicado', value: formatNumber(factor, format, 4, true) },
+        { label: d.realSavings, value: savingsMoneyStr, tone: 'teal' },
+        { label: d.paidPctOfTotal, value: `${paidPctStr} %` },
+        { label: d.divisorFactor, value: factorStr },
       ],
-      formulaText: `Precio original = ${formatMoney(finalPrice, format, currency)} ÷ (1 − ${formatNumber(discountPct, format, 2, true)} / 100)`,
+      formulaText: `${d.formulaLabel} = ${finalMoneyStr} ÷ (1 − ${discountStr} / 100)`,
       steps: [
-        `Si te han descontado un ${formatNumber(discountPct, format, 2, true)} %, el importe pagado representa el ${formatNumber(paidPct, format, 2, true)} % del precio original.`,
-        `Calculamos el factor multiplicador restante: 1 − (${formatNumber(discountPct, format, 2, true)} ÷ 100) = ${formatNumber(factor, format, 4, true)}.`,
-        `Dividimos el precio final entre ese factor: ${formatNumber(finalPrice, format, 2, true)} ÷ ${formatNumber(factor, format, 4, true)} = ${formatMoney(originalPrice, format, currency, 2)}.`,
-        `Ahorro real: ${formatMoney(originalPrice, format, currency, 2)} − ${formatMoney(finalPrice, format, currency, 2)} = ${formatMoney(savings, format, currency, 2)}.`,
+        d.step1(discountStr, paidPctStr),
+        d.step2(discountStr, factorStr),
+        d.step3(formatNumber(finalPrice, format, 2, true), factorStr, originalMoneyStr),
+        d.step4(originalMoneyStr, finalMoneyStr, savingsMoneyStr),
       ],
-      verificationText: `Comprobación directa: ${formatMoney(originalPrice, format, currency, 2)} − ${formatNumber(discountPct, format, 2, true)} % (${formatMoney(savings, format, currency, 2)}) = ${formatMoney(originalPrice * factor, format, currency, 2)}.`,
+      verificationText: d.verify(
+        originalMoneyStr,
+        discountStr,
+        savingsMoneyStr,
+        formatMoney(originalPrice * factor, format, currency, 2)
+      ),
       commonMistakeNote:
         discountPct > 0
           ? {
-              wrongValue: formatMoney(wrongOriginal, format, currency, 2),
-              difference: formatMoney(Math.abs(mistakeDiff), format, currency, 2),
-              explanation: `Error frecuente evitado: si sumaras el ${formatNumber(discountPct, format, 2, true)} % directamente al precio rebajado (${formatMoney(finalPrice, format, currency)} × ${formatNumber(1 + discountPct / 100, format, 2, true)}), obtendrías ${formatMoney(wrongOriginal, format, currency, 2)}, quedándote ${formatMoney(Math.abs(mistakeDiff), format, currency, 2)} por debajo del precio real.`,
+              wrongValue: wrongMoneyStr,
+              difference: diffMoneyStr,
+              explanation: d.mistakeExplain(
+                discountStr,
+                finalMoneyStr,
+                formatNumber(1 + discountPct / 100, format, 2, true),
+                wrongMoneyStr,
+                diffMoneyStr
+              ),
             }
           : undefined,
     };
@@ -190,15 +206,16 @@ export function calculatePercentages(
   if (subMode === 'tax-remove') {
     const totalWithTax = parseInputNumber(amount);
     const taxPct = parseInputNumber(rate);
+    const tr = m.taxRemove;
 
     if (totalWithTax === null || taxPct === null) {
       return {
         valid: false,
-        error: 'Introduce el importe total con impuesto incluido y el porcentaje de IVA o recargo.',
-        primaryLabel: 'Base imponible (sin IVA / impuesto)',
+        error: tr.missingError,
+        primaryLabel: tr.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Base imponible = Total ÷ (1 + IVA / 100)',
+        formulaText: tr.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -207,11 +224,11 @@ export function calculatePercentages(
     if (taxPct <= -100) {
       return {
         valid: false,
-        error: 'El porcentaje de impuesto debe ser superior a −100 %.',
-        primaryLabel: 'Base imponible (sin IVA / impuesto)',
+        error: tr.invalidRateError,
+        primaryLabel: tr.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Base imponible = Total ÷ (1 + IVA / 100)',
+        formulaText: tr.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -222,29 +239,43 @@ export function calculatePercentages(
     const taxAmount = totalWithTax - base;
     const wrongSubtraction = totalWithTax * (1 - taxPct / 100);
 
+    const pctStr = formatNumber(taxPct, format, 2, true);
+    const totalPctStr = formatNumber(100 + taxPct, format, 2, true);
+    const divisorStr = formatNumber(divisor, format, 4, true);
+    const totalMoneyStr = formatMoney(totalWithTax, format, currency, 2);
+    const baseMoneyStr = formatMoney(base, format, currency, 2);
+    const taxMoneyStr = formatMoney(taxAmount, format, currency, 2);
+    const wrongMoneyStr = formatMoney(wrongSubtraction, format, currency, 2);
+    const diffMoneyStr = formatMoney(Math.abs(base - wrongSubtraction), format, currency, 2);
+
     return {
       valid: true,
-      primaryLabel: 'Base imponible (importe sin IVA)',
-      primaryValue: formatMoney(base, format, currency, 2),
+      primaryLabel: tr.primaryLabel,
+      primaryValue: baseMoneyStr,
       secondaryMetrics: [
-        { label: `Cuota de impuesto (${formatNumber(taxPct, format, 2, true)} %)`, value: formatMoney(taxAmount, format, currency, 2), tone: 'teal' },
-        { label: 'Importe total con IVA', value: formatMoney(totalWithTax, format, currency, 2) },
-        { label: 'Divisor aplicado', value: formatNumber(divisor, format, 4, true) },
+        { label: tr.taxAmountLabel(pctStr), value: taxMoneyStr, tone: 'teal' },
+        { label: tr.totalWithTaxLabel, value: totalMoneyStr },
+        { label: tr.divisorLabel, value: divisorStr },
       ],
-      formulaText: `Base = ${formatMoney(totalWithTax, format, currency)} ÷ (1 + ${formatNumber(taxPct, format, 2, true)} / 100)`,
+      formulaText: `${tr.formulaLabel} = ${totalMoneyStr} ÷ (1 + ${pctStr} / 100)`,
       steps: [
-        `El total pagado incluye el 100 % de la base más el ${formatNumber(taxPct, format, 2, true)} % de impuesto, es decir, un ${formatNumber(100 + taxPct, format, 2, true)} %.`,
-        `Convertimos a divisor decimal: 1 + (${formatNumber(taxPct, format, 2, true)} ÷ 100) = ${formatNumber(divisor, format, 4, true)}.`,
-        `Dividimos el total entre ${formatNumber(divisor, format, 4, true)}: ${formatNumber(totalWithTax, format, 2, true)} ÷ ${formatNumber(divisor, format, 4, true)} = ${formatMoney(base, format, currency, 2)}.`,
-        `La cuota del impuesto corresponde a: ${formatMoney(totalWithTax, format, currency, 2)} − ${formatMoney(base, format, currency, 2)} = ${formatMoney(taxAmount, format, currency, 2)}.`,
+        tr.step1(pctStr, totalPctStr),
+        tr.step2(pctStr, divisorStr),
+        tr.step3(divisorStr, formatNumber(totalWithTax, format, 2, true), baseMoneyStr),
+        tr.step4(totalMoneyStr, baseMoneyStr, taxMoneyStr),
       ],
-      verificationText: `Comprobación: ${formatMoney(base, format, currency, 2)} + ${formatNumber(taxPct, format, 2, true)} % (${formatMoney(base * (taxPct / 100), format, currency, 2)}) = ${formatMoney(base * divisor, format, currency, 2)}.`,
+      verificationText: tr.verify(
+        baseMoneyStr,
+        pctStr,
+        formatMoney(base * (taxPct / 100), format, currency, 2),
+        formatMoney(base * divisor, format, currency, 2)
+      ),
       commonMistakeNote:
         taxPct > 0
           ? {
-              wrongValue: formatMoney(wrongSubtraction, format, currency, 2),
-              difference: formatMoney(Math.abs(base - wrongSubtraction), format, currency, 2),
-              explanation: `Si restaras el ${formatNumber(taxPct, format, 2, true)} % directamente al total (${formatMoney(wrongSubtraction, format, currency, 2)}), cometerías un error de ${formatMoney(Math.abs(base - wrongSubtraction), format, currency, 2)} porque el IVA se calcula sobre la base, no sobre el total.`,
+              wrongValue: wrongMoneyStr,
+              difference: diffMoneyStr,
+              explanation: tr.mistakeExplain(pctStr, wrongMoneyStr, diffMoneyStr),
             }
           : undefined,
     };
@@ -253,15 +284,16 @@ export function calculatePercentages(
   if (subMode === 'tax-add') {
     const base = parseInputNumber(amount);
     const taxPct = parseInputNumber(rate);
+    const ta = m.taxAdd;
 
     if (base === null || taxPct === null) {
       return {
         valid: false,
-        error: 'Introduce el importe base y el porcentaje a añadir.',
-        primaryLabel: 'Importe total con impuesto / incremento',
+        error: ta.missingError,
+        primaryLabel: ta.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Total = Base × (1 + Porcentaje / 100)',
+        formulaText: ta.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -271,36 +303,47 @@ export function calculatePercentages(
     const taxAmount = base * (taxPct / 100);
     const total = base + taxAmount;
 
+    const pctStr = formatNumber(taxPct, format, 2, true);
+    const factorStr = formatNumber(factor, format, 4, true);
+    const baseMoneyStr = formatMoney(base, format, currency, 2);
+    const taxMoneyStr = formatMoney(taxAmount, format, currency, 2);
+    const totalMoneyStr = formatMoney(total, format, currency, 2);
+
     return {
       valid: true,
-      primaryLabel: 'Importe total con porcentaje añadido',
-      primaryValue: formatMoney(total, format, currency, 2),
+      primaryLabel: ta.primaryLabel,
+      primaryValue: totalMoneyStr,
       secondaryMetrics: [
-        { label: `Importe añadido (${formatNumber(taxPct, format, 2, true)} %)`, value: formatMoney(taxAmount, format, currency, 2), tone: 'teal' },
-        { label: 'Base inicial', value: formatMoney(base, format, currency, 2) },
-        { label: 'Factor multiplicador', value: formatNumber(factor, format, 4, true) },
+        { label: ta.addedAmountLabel(pctStr), value: taxMoneyStr, tone: 'teal' },
+        { label: ta.initialBaseLabel, value: baseMoneyStr },
+        { label: ta.multiplierLabel, value: factorStr },
       ],
-      formulaText: `Total = ${formatMoney(base, format, currency)} × (1 + ${formatNumber(taxPct, format, 2, true)} / 100)`,
+      formulaText: `${ta.formulaLabel} = ${baseMoneyStr} × (1 + ${pctStr} / 100)`,
       steps: [
-        `Calculamos la parte proporcional: ${formatMoney(base, format, currency, 2)} × (${formatNumber(taxPct, format, 2, true)} ÷ 100) = ${formatMoney(taxAmount, format, currency, 2)}.`,
-        `Sumamos la base y el importe añadido: ${formatMoney(base, format, currency, 2)} + ${formatMoney(taxAmount, format, currency, 2)} = ${formatMoney(total, format, currency, 2)}.`,
+        ta.step1(baseMoneyStr, pctStr, taxMoneyStr),
+        ta.step2(baseMoneyStr, taxMoneyStr, totalMoneyStr),
       ],
-      verificationText: `Comprobación inversa: ${formatMoney(total, format, currency, 2)} ÷ ${formatNumber(factor, format, 4, true)} = ${formatMoney(total / factor, format, currency, 2)}.`,
+      verificationText: ta.verify(
+        totalMoneyStr,
+        factorStr,
+        formatMoney(total / factor, format, currency, 2)
+      ),
     };
   }
 
   if (subMode === 'part-of-whole') {
     const a = parseInputNumber(valueA);
     const b = parseInputNumber(valueB);
+    const pw = m.partOfWhole;
 
     if (a === null || b === null) {
       return {
         valid: false,
-        error: 'Introduce la cantidad A y el total de referencia B.',
-        primaryLabel: '¿Qué porcentaje es A sobre B?',
+        error: pw.missingError,
+        primaryLabel: pw.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Porcentaje = (A ÷ B) × 100',
+        formulaText: pw.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -309,11 +352,11 @@ export function calculatePercentages(
     if (b === 0) {
       return {
         valid: false,
-        error: 'El valor de referencia B no puede ser 0 porque no es posible dividir entre cero.',
-        primaryLabel: '¿Qué porcentaje es A sobre B?',
+        error: pw.zeroDivisorError,
+        primaryLabel: pw.primaryLabel,
         primaryValue: '—',
         secondaryMetrics: [],
-        formulaText: 'Porcentaje = (A ÷ B) × 100',
+        formulaText: pw.formulaBase,
         steps: [],
         verificationText: '',
       };
@@ -322,37 +365,43 @@ export function calculatePercentages(
     const pct = (a / b) * 100;
     const complementPct = 100 - pct;
     const diff = b - a;
+    const aStr = formatNumber(a, format, 2, true);
+    const bStr = formatNumber(b, format, 2, true);
+    const pctStr = formatNumber(pct, format, 2, true);
+    const ratioStr = formatNumber(a / b, format, 6, true);
 
     return {
       valid: true,
-      primaryLabel: 'Porcentaje que representa A sobre B',
-      primaryValue: `${formatNumber(pct, format, 2, true)} %`,
+      primaryLabel: pw.primaryLabel,
+      primaryValue: `${pctStr} %`,
       secondaryMetrics: [
-        { label: 'Restante hasta el 100 %', value: `${formatNumber(complementPct, format, 2, true)} %`, tone: 'teal' },
-        { label: 'Diferencia (B − A)', value: formatMoney(diff, format, currency, 2) },
-        { label: 'Proporción decimal (A / B)', value: formatNumber(a / b, format, 4, true) },
+        { label: pw.remainingTo100, value: `${formatNumber(complementPct, format, 2, true)} %`, tone: 'teal' },
+        { label: pw.differenceBA, value: formatMoney(diff, format, currency, 2) },
+        { label: pw.decimalRatio, value: formatNumber(a / b, format, 4, true) },
       ],
-      formulaText: `% = (${formatNumber(a, format, 2, true)} ÷ ${formatNumber(b, format, 2, true)}) × 100`,
-      steps: [
-        `Dividimos la parte (A) entre el total (B): ${formatNumber(a, format, 2, true)} ÷ ${formatNumber(b, format, 2, true)} = ${formatNumber(a / b, format, 6, true)}.`,
-        `Multiplicamos por 100 para expresar en porcentaje: ${formatNumber(a / b, format, 6, true)} × 100 = ${formatNumber(pct, format, 2, true)} %.`,
-      ],
-      verificationText: `Comprobación: el ${formatNumber(pct, format, 2, true)} % de ${formatMoney(b, format, currency, 2)} es ${formatMoney((b * pct) / 100, format, currency, 2)}.`,
+      formulaText: `% = (${aStr} ÷ ${bStr}) × 100`,
+      steps: [pw.step1(aStr, bStr, ratioStr), pw.step2(ratioStr, pctStr)],
+      verificationText: pw.verify(
+        pctStr,
+        formatMoney(b, format, currency, 2),
+        formatMoney((b * pct) / 100, format, currency, 2)
+      ),
     };
   }
 
   // subMode === 'pct-change'
   const initialVal = parseInputNumber(valueA);
   const finalVal = parseInputNumber(valueB);
+  const pc = m.pctChange;
 
   if (initialVal === null || finalVal === null) {
     return {
       valid: false,
-      error: 'Introduce el valor inicial (A) y el valor final (B) para calcular la variación porcentual.',
-      primaryLabel: 'Variación porcentual (de A a B)',
+      error: pc.missingError,
+      primaryLabel: pc.primaryPrefix,
       primaryValue: '—',
       secondaryMetrics: [],
-      formulaText: 'Variación % = ((B − A) ÷ |A|) × 100',
+      formulaText: pc.formulaBase,
       steps: [],
       verificationText: '',
     };
@@ -361,11 +410,11 @@ export function calculatePercentages(
   if (initialVal === 0) {
     return {
       valid: false,
-      error: 'El valor inicial (A) no puede ser 0 para calcular una variación porcentual.',
-      primaryLabel: 'Variación porcentual (de A a B)',
+      error: pc.zeroInitialError,
+      primaryLabel: pc.primaryPrefix,
       primaryValue: '—',
       secondaryMetrics: [],
-      formulaText: 'Variación % = ((B − A) ÷ |A|) × 100',
+      formulaText: pc.formulaBase,
       steps: [],
       verificationText: '',
     };
@@ -375,27 +424,39 @@ export function calculatePercentages(
   const pctChange = (diff / Math.abs(initialVal)) * 100;
   const sign = pctChange > 0 ? '+' : '';
   const directionLabel =
-    pctChange > 0 ? 'Incremento (subida)' : pctChange < 0 ? 'Reducción (bajada)' : 'Sin variación';
+    pctChange > 0 ? pc.increase : pctChange < 0 ? pc.decrease : pc.noChange;
+
+  const aStr = formatNumber(initialVal, format, 2, true);
+  const bStr = formatNumber(finalVal, format, 2, true);
+  const absAStr = formatNumber(Math.abs(initialVal), format, 2, true);
+  const diffNumStr = `${diff > 0 ? '+' : ''}${formatNumber(diff, format, 2, true)}`;
+  const ratioStr = formatNumber(diff / Math.abs(initialVal), format, 6, true);
+  const pctSignedStr = `${sign}${formatNumber(pctChange, format, 2, true)}`;
 
   return {
     valid: true,
-    primaryLabel: `Variación porcentual · ${directionLabel}`,
-    primaryValue: `${sign}${formatNumber(pctChange, format, 2, true)} %`,
+    primaryLabel: `${pc.primaryPrefix} · ${directionLabel}`,
+    primaryValue: `${pctSignedStr} %`,
     secondaryMetrics: [
       {
-        label: 'Diferencia absoluta (B − A)',
+        label: pc.absDiffLabel,
         value: `${diff > 0 ? '+' : ''}${formatMoney(diff, format, currency, 2)}`,
         tone: diff >= 0 ? 'teal' : 'amber',
       },
-      { label: 'Ratio (B ÷ A)', value: `${formatNumber(finalVal / initialVal, format, 4, true)}×` },
+      { label: pc.ratioLabel, value: `${formatNumber(finalVal / initialVal, format, 4, true)}×` },
     ],
-    formulaText: `Variación % = ((${formatNumber(finalVal, format, 2, true)} − ${formatNumber(initialVal, format, 2, true)}) ÷ ${formatNumber(Math.abs(initialVal), format, 2, true)}) × 100`,
+    formulaText: `% = ((${bStr} − ${aStr}) ÷ ${absAStr}) × 100`,
     steps: [
-      `Calculamos la diferencia absoluta entre el valor final y el inicial: ${formatNumber(finalVal, format, 2, true)} − ${formatNumber(initialVal, format, 2, true)} = ${diff > 0 ? '+' : ''}${formatNumber(diff, format, 2, true)}.`,
-      `Dividimos la diferencia entre el valor inicial: ${formatNumber(diff, format, 2, true)} ÷ ${formatNumber(Math.abs(initialVal), format, 2, true)} = ${formatNumber(diff / Math.abs(initialVal), format, 6, true)}.`,
-      `Multiplicamos por 100: ${sign}${formatNumber(pctChange, format, 2, true)} %.`,
+      pc.step1(bStr, aStr, diffNumStr),
+      pc.step2(formatNumber(diff, format, 2, true), absAStr, ratioStr),
+      pc.step3(pctSignedStr),
     ],
-    verificationText: `Comprobación: ${formatMoney(initialVal, format, currency, 2)} × (1 ${pctChange >= 0 ? '+' : '−'} ${formatNumber(Math.abs(pctChange) / 100, format, 4, true)}) = ${formatMoney(finalVal, format, currency, 2)}.`,
+    verificationText: pc.verify(
+      formatMoney(initialVal, format, currency, 2),
+      pctChange >= 0 ? '+' : '−',
+      formatNumber(Math.abs(pctChange) / 100, format, 4, true),
+      formatMoney(finalVal, format, currency, 2)
+    ),
   };
 }
 
@@ -406,7 +467,7 @@ export interface DistributionRowResult {
   realPct: number;
   exactAmount: number;
   roundedAmount: number;
-  centAdjustment: number; // in currency units, e.g. +0.01 or -0.01
+  centAdjustment: number;
 }
 
 export interface DistributionResult {
@@ -414,7 +475,7 @@ export interface DistributionResult {
   error?: string;
   totalAmount: number;
   sumInput: number;
-  pctDifference: number; // sumPct - 100 in percentage mode
+  pctDifference: number;
   isBalanced: boolean;
   allocatedTotal: number;
   unallocatedAmount: number;
@@ -422,13 +483,17 @@ export interface DistributionResult {
   totalRoundedSum: number;
 }
 
-export function calculateDistribution(state: DistributionState): DistributionResult {
+export function calculateDistribution(
+  state: DistributionState,
+  t: TranslationDictionary
+): DistributionResult {
   const totalAmount = parseInputNumber(state.totalAmount);
+  const du = t.distributionUi;
 
   if (totalAmount === null || totalAmount < 0) {
     return {
       valid: false,
-      error: 'Introduce un importe total válido (igual o mayor que 0) para realizar el reparto.',
+      error: du.invalidTotalError,
       totalAmount: 0,
       sumInput: 0,
       pctDifference: 0,
@@ -443,7 +508,7 @@ export function calculateDistribution(state: DistributionState): DistributionRes
   if (state.participants.length === 0) {
     return {
       valid: false,
-      error: 'Añade al menos un participante o concepto para repartir el importe.',
+      error: du.noParticipantsError,
       totalAmount,
       sumInput: 0,
       pctDifference: 0,
@@ -457,14 +522,14 @@ export function calculateDistribution(state: DistributionState): DistributionRes
 
   const parsedItems = state.participants.map((p, idx) => ({
     id: p.id,
-    name: p.name.trim() || `Parte ${idx + 1}`,
+    name: p.name.trim() || `${du.exampleData.partPrefix} ${idx + 1}`,
     val: parseInputNumber(p.value) ?? 0,
   }));
 
   if (parsedItems.some((item) => item.val < 0)) {
     return {
       valid: false,
-      error: 'Los porcentajes o pesos no pueden ser valores negativos.',
+      error: du.negativeValuesError,
       totalAmount,
       sumInput: 0,
       pctDifference: 0,
@@ -482,7 +547,7 @@ export function calculateDistribution(state: DistributionState): DistributionRes
     if (sumInput <= 0) {
       return {
         valid: false,
-        error: 'La suma de pesos debe ser mayor que 0 para calcular la proporción.',
+        error: du.zeroWeightError,
         totalAmount,
         sumInput,
         pctDifference: 0,
@@ -553,12 +618,10 @@ export function calculateDistribution(state: DistributionState): DistributionRes
     };
   }
 
-  // Percentage mode
   const pctDifference = sumInput - 100;
   const isBalanced = Math.abs(pctDifference) <= 0.01;
 
   if (isBalanced) {
-    // Exact 100% -> apply Hamilton largest remainder method so cents match totalAmount exactly
     const totalCents = Math.round(totalAmount * 100);
     const provisional = parsedItems.map((item, index) => {
       const normalizedPct = sumInput > 0 ? (item.val / sumInput) * 100 : 0;
@@ -618,7 +681,6 @@ export function calculateDistribution(state: DistributionState): DistributionRes
     };
   }
 
-  // Unbalanced percentage sum (not equal to 100%)
   const rows: DistributionRowResult[] = parsedItems.map((item) => {
     const exactAmount = (totalAmount * item.val) / 100;
     const roundedAmount = Math.round(exactAmount * 100) / 100;
@@ -664,13 +726,15 @@ export interface RuleOfThreeResult {
 
 export function calculateRuleOfThree(
   state: RuleOfThreeState,
-  format: NumberFormatMode
+  format: NumberFormatMode,
+  t: TranslationDictionary
 ): RuleOfThreeResult {
   const a = parseInputNumber(state.a);
   const b = parseInputNumber(state.b);
   const c = parseInputNumber(state.c);
-  const unitA = state.unitA.trim() || 'unidades A';
-  const unitB = state.unitB.trim() || 'unidades B';
+  const unitA = state.unitA.trim() || t.ruleOfThreeUi.defaultUnitA;
+  const unitB = state.unitB.trim() || t.ruleOfThreeUi.defaultUnitB;
+  const rm = t.ruleOfThreeMath;
 
   const isDirect = state.type === 'direct';
   const formulaText = isDirect ? 'X = (B × C) ÷ A' : 'X = (A × B) ÷ C';
@@ -678,29 +742,33 @@ export function calculateRuleOfThree(
   if (a === null || b === null || c === null) {
     return {
       valid: false,
-      error: 'Completa los valores A, B y C para calcular el resultado X.',
+      error: rm.missingError,
       x: null,
       formattedX: '—',
       formulaText,
       substitutionText: '',
       steps: [],
-      constantLabel: isDirect ? 'Razón unitaria (B ÷ A)' : 'Producto constante (A × B)',
+      constantLabel: isDirect ? rm.directConstantLabel : rm.inverseConstantLabel,
       constantValue: '—',
       verificationText: '',
     };
   }
 
+  const aStr = formatNumber(a, format, 4, true);
+  const bStr = formatNumber(b, format, 4, true);
+  const cStr = formatNumber(c, format, 4, true);
+
   if (isDirect) {
     if (a === 0) {
       return {
         valid: false,
-        error: 'El valor A no puede ser 0 en una regla de tres directa (no se puede dividir entre cero).',
+        error: rm.directZeroAError,
         x: null,
         formattedX: '—',
         formulaText,
         substitutionText: '',
         steps: [],
-        constantLabel: 'Razón unitaria (B ÷ A)',
+        constantLabel: rm.directConstantLabel,
         constantValue: '—',
         verificationText: '',
       };
@@ -710,36 +778,35 @@ export function calculateRuleOfThree(
     const x = product / a;
     const unitRate = b / a;
     const formattedX = formatNumber(x, format, 4, true);
+    const rateStr = formatNumber(unitRate, format, 4, true);
+    const prodStr = formatNumber(product, format, 4, true);
 
     return {
       valid: true,
       x,
       formattedX,
       formulaText,
-      substitutionText: `X = (${formatNumber(b, format, 4, true)} × ${formatNumber(c, format, 4, true)}) ÷ ${formatNumber(a, format, 4, true)}`,
-      steps: [
-        `Relación directa: al variar ${unitA}, ${unitB} varía en la misma proporción.`,
-        `Calculamos la razón por cada unidad de A: ${formatNumber(b, format, 4, true)} ÷ ${formatNumber(a, format, 4, true)} = ${formatNumber(unitRate, format, 4, true)} ${unitB} por cada 1 ${unitA}.`,
-        `Multiplicamos en cruz (B × C): ${formatNumber(b, format, 4, true)} × ${formatNumber(c, format, 4, true)} = ${formatNumber(product, format, 4, true)}.`,
-        `Dividimos entre A: ${formatNumber(product, format, 4, true)} ÷ ${formatNumber(a, format, 4, true)} = ${formattedX} ${unitB}.`,
-      ],
-      constantLabel: `Por cada 1 ${unitA}`,
-      constantValue: `${formatNumber(unitRate, format, 4, true)} ${unitB}`,
-      verificationText: `Comprobación de proporcionalidad: B/A = ${formatNumber(b / a, format, 4, true)} y X/C = ${c !== 0 ? formatNumber(x / c, format, 4, true) : '—'}.`,
+      substitutionText: `X = (${bStr} × ${cStr}) ÷ ${aStr}`,
+      steps: rm.directSteps(unitA, unitB, aStr, bStr, cStr, rateStr, prodStr, formattedX),
+      constantLabel: rm.perOneUnit(unitA),
+      constantValue: rm.unitRateValue(rateStr, unitB),
+      verificationText: rm.directVerify(
+        formatNumber(b / a, format, 4, true),
+        c !== 0 ? formatNumber(x / c, format, 4, true) : '—'
+      ),
     };
   }
 
-  // Inverse rule of three
   if (c === 0) {
     return {
       valid: false,
-      error: 'El valor C no puede ser 0 en una regla de tres inversa (implica división entre cero).',
+      error: rm.inverseZeroCError,
       x: null,
       formattedX: '—',
       formulaText,
       substitutionText: '',
       steps: [],
-      constantLabel: 'Producto constante (A × B)',
+      constantLabel: rm.inverseConstantLabel,
       constantValue: '—',
       verificationText: '',
     };
@@ -748,13 +815,13 @@ export function calculateRuleOfThree(
   if (a === 0) {
     return {
       valid: false,
-      error: 'El valor inicial A debe ser distinto de 0 para establecer una proporción inversa.',
+      error: rm.inverseZeroAError,
       x: null,
       formattedX: '—',
       formulaText,
       substitutionText: '',
       steps: [],
-      constantLabel: 'Producto constante (A × B)',
+      constantLabel: rm.inverseConstantLabel,
       constantValue: '—',
       verificationText: '',
     };
@@ -763,20 +830,20 @@ export function calculateRuleOfThree(
   const product = a * b;
   const x = product / c;
   const formattedX = formatNumber(x, format, 4, true);
+  const prodStr = formatNumber(product, format, 4, true);
 
   return {
     valid: true,
     x,
     formattedX,
     formulaText,
-    substitutionText: `X = (${formatNumber(a, format, 4, true)} × ${formatNumber(b, format, 4, true)}) ÷ ${formatNumber(c, format, 4, true)}`,
-    steps: [
-      `Relación inversa: si aumenta ${unitA}, disminuye ${unitB} (y viceversa), manteniendo constante su producto.`,
-      `Multiplicamos en línea la pareja conocida (A × B): ${formatNumber(a, format, 4, true)} × ${formatNumber(b, format, 4, true)} = ${formatNumber(product, format, 4, true)}.`,
-      `Dividimos ese producto total entre C: ${formatNumber(product, format, 4, true)} ÷ ${formatNumber(c, format, 4, true)} = ${formattedX} ${unitB}.`,
-    ],
-    constantLabel: 'Magnitud total constante (A × B)',
-    constantValue: formatNumber(product, format, 4, true),
-    verificationText: `Comprobación inversa: A × B = ${formatNumber(a * b, format, 4, true)} y C × X = ${formatNumber(c * x, format, 4, true)}.`,
+    substitutionText: `X = (${aStr} × ${bStr}) ÷ ${cStr}`,
+    steps: rm.inverseSteps(unitA, unitB, aStr, bStr, cStr, prodStr, formattedX),
+    constantLabel: rm.inverseConstantLabel,
+    constantValue: prodStr,
+    verificationText: rm.inverseVerify(
+      formatNumber(a * b, format, 4, true),
+      formatNumber(c * x, format, 4, true)
+    ),
   };
 }
