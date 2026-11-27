@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AdSlot } from './components/AdSlot';
+import { AffiliateRecommendations } from './components/AffiliateRecommendations';
 import { DistributionModule } from './components/DistributionModule';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
@@ -319,7 +320,7 @@ export default function App() {
           />
         )}
 
-        <AdSlot slotLabel={t.adSlot.intermediateLabel} minHeightClass="min-h-[96px]" t={t} />
+        <AffiliateRecommendations activeModule={state.activeModule} t={t} />
 
         <SeoAndFaqSection
           onLoadWorkedExample={handleLoadWorkedExample}

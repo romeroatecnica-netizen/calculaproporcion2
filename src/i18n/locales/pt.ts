@@ -1,3 +1,4 @@
+import { buildAmazonEsSearchUrl } from '../../config/affiliate';
 import { TranslationDictionary } from '../types';
 
 export const pt: TranslationDictionary = {
@@ -400,6 +401,104 @@ export const pt: TranslationDictionary = {
     ifWord: 'Se',
     forWord: 'Para',
   },
+  contextualAffiliate: {
+    ariaLabel: 'Produtos e equipamento recomendado na Amazon Espanha',
+    badgeLabel: 'Amazon.es',
+    disclosureShort:
+      'Ligações de afiliado · Na qualidade de Afiliado da Amazon, recebo uma comissão pelas compras elegíveis na Amazon.es.',
+    byModule: {
+      percentages: {
+        title: 'Material recomendado para IVA, preços e margens',
+        subtitle: 'Ferramentas práticas de secretária adequadas aos seus cálculos de descontos e impostos',
+        items: [
+          {
+            title: 'Calculadora financeira e de IVA de secretária',
+            category: 'IVA e Preços',
+            description:
+              'Calculadora solar de escritório com teclas dedicadas TAX+/TAX− e margem para conferir faturas.',
+            href: buildAmazonEsSearchUrl('calculadora financiera oficina impuestos'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+          {
+            title: 'Livro de contabilidade, receitas e despesas',
+            category: 'Trabalhadores independentes',
+            description:
+              'Livro de registo físico para anotar bases tributáveis, valores de IVA e talões diários.',
+            href: buildAmazonEsSearchUrl('libro contabilidad ingresos gastos autonomos'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+          {
+            title: 'Calculadora de secretária 12 dígitos ecrã grande',
+            category: 'Comércio e Escritório',
+            description:
+              'Ecrã inclinado de leitura nítida com teclas diretas de percentagem e total geral.',
+            href: buildAmazonEsSearchUrl('calculadora escritorio 12 digitos gran pantalla'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+        ],
+      },
+      distribution: {
+        title: 'Ferramentas úteis para orçamentos e despesas partilhadas',
+        subtitle: 'Organizadores físicos para arrumar faturas comuns, viagens e recibos',
+        items: [
+          {
+            title: 'Pasta organizadora de orçamento e poupança',
+            category: 'Casa e Viagens',
+            description:
+              'Pasta com envelopes e folhas de controlo para dividir orçamentos partilhados por categorias.',
+            href: buildAmazonEsSearchUrl('carpeta presupuesto ahorro sobres gastos'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+          {
+            title: 'Arquivador sanfona para faturas e recibos',
+            category: 'Documentação',
+            description:
+              'Classificador extensível por separadores para organizar talões de viagens ou casa partilhada.',
+            href: buildAmazonEsSearchUrl('archivador acordeon facturas recibos'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+          {
+            title: 'Calculadora de secretária duplo ecrã 12 dígitos',
+            category: 'Verificação',
+            description:
+              'Confirme totais divididos e somas parcelares lado a lado na sua mesa de trabalho.',
+            href: buildAmazonEsSearchUrl('calculadora escritorio 12 digitos doble pantalla'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+        ],
+      },
+      'rule-of-three': {
+        title: 'Instrumentos recomendados para medições e escalas',
+        subtitle: 'Precisão prática para receitas, bricolage, obras e estudo técnico',
+        items: [
+          {
+            title: 'Balança digital de cozinha precisão 1 g',
+            category: 'Receitas e Proporções',
+            description:
+              'Balança em aço inoxidável com função tara para ajustar receitas por regra de três.',
+            href: buildAmazonEsSearchUrl('bascula cocina digital precision gramos'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+          {
+            title: 'Medidor laser de distância para obra e casa',
+            category: 'Bricolage e Remodelações',
+            description:
+              'Meça áreas com rigor para calcular litros de tinta, materiais e rendimentos.',
+            href: buildAmazonEsSearchUrl('medidor laser distancia obra bricolaje'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+          {
+            title: 'Calculadora científica com frações naturais',
+            category: 'Estudo e Engenharia',
+            description:
+              'Visor natural para resolver proporções, frações e conversões técnicas com rapidez.',
+            href: buildAmazonEsSearchUrl('calculadora cientifica casio fx'),
+            ctaLabel: 'Ver na Amazon.es',
+          },
+        ],
+      },
+    },
+  },
   seoSection: {
     examplesTitle: 'Exemplos resolvidos passo a passo',
     examplesSubtitle:
@@ -524,38 +623,50 @@ export const pt: TranslationDictionary = {
           'Não. Todos os cálculos correm 100 % localmente no navegador. O último estado fica apenas no localStorage e a partilha codifica os dados na própria ligação.',
       },
     ],
-    resourcesTitle: 'Recursos e ferramentas recomendadas',
-    resourcesDisclosure: 'Seleção editorial · Ligações externas e de afiliados contextuais',
+    resourcesTitle: 'Equipamento e ferramentas recomendadas na Amazon.es',
+    resourcesDisclosure: 'Seleção de afiliados · Ligações exclusivas para Amazon.es',
+    resourcesLegalNotice:
+      'Aviso legal de afiliados: Na qualidade de Afiliado da Amazon, recebo uma comissão pelas compras elegíveis. Todas as recomendações apontam exclusivamente para www.amazon.es.',
     resources: [
       {
-        title: 'Calculadoras científicas e financeiras de secretária',
-        category: 'Material de escritório',
+        title: 'Calculadoras financeiras e de IVA de secretária',
+        category: 'Escritório e Comércio',
         description:
-          'Modelos solares de duas linhas com tecla direta de percentagem e imposto para comércio e estudantes.',
-        href: 'https://www.amazon.es/s?k=calculadora+financiera+oficina',
-        ctaLabel: 'Ver modelos',
+          'Modelos solares de ecrã amplo com tecla direta de impostos e margem para lojas e profissionais.',
+        href: buildAmazonEsSearchUrl('calculadora financiera oficina casio'),
+        ctaLabel: 'Ver na Amazon.es',
       },
       {
-        title: 'Software de faturação e cálculo automático de IVA',
-        category: 'Gestão para trabalhadores independentes',
+        title: 'Calculadoras científicas para proporções e estudo',
+        category: 'Educação e Engenharia',
         description:
-          'Automatize orçamentos, faturas recorrentes e apuramento trimestral de IVA sem folhas manuais.',
-        href: 'https://www.holded.com/es',
-        ctaLabel: 'Explorar ferramenta',
+          'Visor natural de frações para regra de três, percentagens e cálculos técnicos.',
+        href: buildAmazonEsSearchUrl('calculadora cientifica escolar universidad'),
+        ctaLabel: 'Ver na Amazon.es',
       },
       {
-        title: 'Folhas de cálculo colaborativas na nuvem',
-        category: 'Produtividade',
+        title: 'Livros de contabilidade e registo de despesas',
+        category: 'Gestão e Casa',
         description:
-          'Crie modelos mensais de despesas partilhadas e orçamentos proporcionais em tempo real.',
-        href: 'https://workspace.google.com/intl/es/products/sheets/',
-        ctaLabel: 'Abrir Google Sheets',
+          'Cadernos contabilísticos e classificadores de faturas para controlar despesas partilhadas e IVA.',
+        href: buildAmazonEsSearchUrl('libro contabilidad ingresos gastos autonomos'),
+        ctaLabel: 'Ver na Amazon.es',
+      },
+      {
+        title: 'Balanças digitais de precisão ao grama',
+        category: 'Cozinha e Oficina',
+        description:
+          'Pesagem exata ao grama para ajustar receitas, misturas e quantidades por regra de três.',
+        href: buildAmazonEsSearchUrl('bascula cocina digital precision gramos'),
+        ctaLabel: 'Ver na Amazon.es',
       },
     ],
   },
   footer: {
     tagline:
       'Cálculos matemáticos deterministas 100 % locais no navegador · Regra de três, percentagem inversa e partilha ao cêntimo.',
+    affiliateNotice:
+      'Aviso de afiliados: Na qualidade de Afiliado da Amazon, recebo uma comissão pelas compras elegíveis efetuadas através das ligações para Amazon.es.',
     navAria: 'Ligações rápidas do rodapé',
     linkPercentages: 'Percentagem inversa e IVA',
     linkDistribution: 'Repartição proporcional',

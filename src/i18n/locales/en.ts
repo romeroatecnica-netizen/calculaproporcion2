@@ -1,3 +1,4 @@
+import { buildAmazonEsSearchUrl } from '../../config/affiliate';
 import { TranslationDictionary } from '../types';
 
 export const en: TranslationDictionary = {
@@ -400,6 +401,104 @@ export const en: TranslationDictionary = {
     ifWord: 'If',
     forWord: 'For',
   },
+  contextualAffiliate: {
+    ariaLabel: 'Recommended hardware and stationery on Amazon Spain',
+    badgeLabel: 'Amazon.es',
+    disclosureShort:
+      'Affiliate links · As an Amazon Associate, I earn from qualifying purchases on Amazon.es.',
+    byModule: {
+      percentages: {
+        title: 'Recommended gear for VAT, pricing & margin work',
+        subtitle: 'Practical desk tools matched to your discount and tax calculations',
+        items: [
+          {
+            title: 'Desktop Financial & Tax Calculator',
+            category: 'VAT & Pricing',
+            description:
+              'Solar dual-power desk calculator with dedicated TAX+/TAX− and margin keys for quick invoice checks.',
+            href: buildAmazonEsSearchUrl('calculadora financiera oficina impuestos'),
+            ctaLabel: 'View on Amazon.es',
+          },
+          {
+            title: 'Income, Expense & VAT Ledger Book',
+            category: 'Freelancers & SMB',
+            description:
+              'Structured accounting notebook for logging net bases, VAT amounts, and daily receipts.',
+            href: buildAmazonEsSearchUrl('libro contabilidad ingresos gastos autonomos'),
+            ctaLabel: 'View on Amazon.es',
+          },
+          {
+            title: '12-Digit Large Display Desk Calculator',
+            category: 'Retail & Office',
+            description:
+              'Ergonomic angled screen with direct percentage and grand-total keys for everyday counter checks.',
+            href: buildAmazonEsSearchUrl('calculadora escritorio 12 digitos gran pantalla'),
+            ctaLabel: 'View on Amazon.es',
+          },
+        ],
+      },
+      distribution: {
+        title: 'Recommended tools for shared budgets & expense tracking',
+        subtitle: 'Physical organizers to keep group bills, trips, and receipts tidy',
+        items: [
+          {
+            title: 'Budget & Shared Expense Binder',
+            category: 'Household & Trips',
+            description:
+              'Zippered organizer with labeled envelopes and tracking sheets for shared group budgets.',
+            href: buildAmazonEsSearchUrl('carpeta presupuesto ahorro sobres gastos'),
+            ctaLabel: 'View on Amazon.es',
+          },
+          {
+            title: 'Accordion Receipt & Invoice Organizer',
+            category: 'Paperwork',
+            description:
+              'Multi-pocket expanding file folder to separate tickets, utility bills, and shared invoices.',
+            href: buildAmazonEsSearchUrl('archivador acordeon facturas recibos'),
+            ctaLabel: 'View on Amazon.es',
+          },
+          {
+            title: 'Dual-Screen 12-Digit Desk Calculator',
+            category: 'Verification',
+            description:
+              'Check split totals and verify step-by-step sums side by side on your desk.',
+            href: buildAmazonEsSearchUrl('calculadora escritorio 12 digitos doble pantalla'),
+            ctaLabel: 'View on Amazon.es',
+          },
+        ],
+      },
+      'rule-of-three': {
+        title: 'Recommended instruments for measurements & scaling',
+        subtitle: 'Precision tools for recipes, DIY projects, workshops, and study',
+        items: [
+          {
+            title: 'Digital Precision Kitchen Scale (1g)',
+            category: 'Recipes & Ratios',
+            description:
+              'Stainless steel digital scale with tare function to scale recipe weights proportionally.',
+            href: buildAmazonEsSearchUrl('bascula cocina digital precision gramos'),
+            ctaLabel: 'View on Amazon.es',
+          },
+          {
+            title: 'Laser Distance Meter & Measure',
+            category: 'DIY & Construction',
+            description:
+              'Compact laser measurer for calculating wall areas, paint coverage, and material ratios.',
+            href: buildAmazonEsSearchUrl('medidor laser distancia obra bricolaje'),
+            ctaLabel: 'View on Amazon.es',
+          },
+          {
+            title: 'Scientific Calculator (Fractions & Ratios)',
+            category: 'Study & Engineering',
+            description:
+              'Natural textbook display scientific calculator for proportions, conversions, and STEM work.',
+            href: buildAmazonEsSearchUrl('calculadora cientifica casio fx'),
+            ctaLabel: 'View on Amazon.es',
+          },
+        ],
+      },
+    },
+  },
   seoSection: {
     examplesTitle: 'Worked step-by-step examples',
     examplesSubtitle:
@@ -524,38 +623,50 @@ export const en: TranslationDictionary = {
           'No. Every calculation runs 100% locally and deterministically in your browser. Your last state is saved only in localStorage, and sharing encodes the values directly inside the URL.',
       },
     ],
-    resourcesTitle: 'Recommended tools & resources',
-    resourcesDisclosure: 'Editorial selection · Contextual affiliate & external links',
+    resourcesTitle: 'Recommended gear & tools on Amazon.es',
+    resourcesDisclosure: 'Affiliate selection · Links exclusively to Amazon.es',
+    resourcesLegalNotice:
+      'Legal disclosure: As an Amazon Associate, I earn from qualifying purchases. All product recommendations link exclusively to www.amazon.es.',
     resources: [
       {
-        title: 'Desktop scientific & financial calculators',
-        category: 'Office hardware',
+        title: 'Desktop financial & tax calculators',
+        category: 'Office & VAT hardware',
         description:
-          'Dual-line solar desk calculators with dedicated percentage and tax keys for retail, freelancers, and students.',
-        href: 'https://www.amazon.es/s?k=calculadora+financiera+oficina',
-        ctaLabel: 'Browse models',
+          'Dual-power solar desk calculators with dedicated tax and margin keys for shops, freelancers, and offices.',
+        href: buildAmazonEsSearchUrl('calculadora financiera oficina casio'),
+        ctaLabel: 'Browse on Amazon.es',
       },
       {
-        title: 'Invoicing & automated VAT accounting software',
-        category: 'Freelancer & SMB tools',
+        title: 'Scientific calculators for proportions & study',
+        category: 'Education & STEM',
         description:
-          'Automate quotes, recurring invoices, and quarterly VAT breakdowns without manual spreadsheets.',
-        href: 'https://www.holded.com/es',
-        ctaLabel: 'Explore platform',
+          'Natural-display calculators for direct/inverse rule of three, fractions, and technical calculations.',
+        href: buildAmazonEsSearchUrl('calculadora cientifica escolar universidad'),
+        ctaLabel: 'Browse on Amazon.es',
       },
       {
-        title: 'Cloud collaborative spreadsheets',
-        category: 'Productivity',
+        title: 'Accounting & expense ledger books',
+        category: 'Freelancer & household',
         description:
-          'Build recurring shared expense trackers and proportional budget templates with live formulas.',
-        href: 'https://workspace.google.com/intl/es/products/sheets/',
-        ctaLabel: 'Open Google Sheets',
+          'Physical ledger books and invoice organizers to track shared expenses, receipts, and quarterly taxes.',
+        href: buildAmazonEsSearchUrl('libro contabilidad ingresos gastos autonomos'),
+        ctaLabel: 'Browse on Amazon.es',
+      },
+      {
+        title: 'Digital precision scales for recipe scaling',
+        category: 'Kitchen & workshop',
+        description:
+          'Gram-accurate digital scales ideal when scaling recipe ingredients or mixtures via rule of three.',
+        href: buildAmazonEsSearchUrl('bascula cocina digital precision gramos'),
+        ctaLabel: 'Browse on Amazon.es',
       },
     ],
   },
   footer: {
     tagline:
       '100% local deterministic math in your browser · Rule of three, reverse percentages, and cent-exact splitting.',
+    affiliateNotice:
+      'Affiliate disclosure: As an Amazon Associate, I earn from qualifying purchases made through product links to Amazon.es.',
     navAria: 'Footer quick links',
     linkPercentages: 'Reverse percentage & VAT',
     linkDistribution: 'Proportional split',

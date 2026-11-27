@@ -14,7 +14,7 @@ export function Footer({ onSelectModule, t }: FooterProps) {
 
   return (
     <footer className="border-t border-[#D6CFC2] bg-[#FCFBF7] mt-14">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <p className="font-display text-base font-bold text-[#18181B]">{t.meta.siteName}</p>
@@ -47,6 +47,10 @@ export function Footer({ onSelectModule, t }: FooterProps) {
             </button>
           </nav>
         </div>
+
+        <p className="no-print border-t border-[#E6E0D5] pt-4 text-[11px] text-[#52524E] leading-relaxed">
+          {t.footer.affiliateNotice}
+        </p>
       </div>
     </footer>
   );

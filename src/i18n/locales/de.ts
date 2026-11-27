@@ -1,3 +1,4 @@
+import { buildAmazonEsSearchUrl } from '../../config/affiliate';
 import { TranslationDictionary } from '../types';
 
 export const de: TranslationDictionary = {
@@ -400,6 +401,104 @@ export const de: TranslationDictionary = {
     ifWord: 'Wenn',
     forWord: 'Für',
   },
+  contextualAffiliate: {
+    ariaLabel: 'Empfohlene Produkte und Büroausstattung auf Amazon Spanien',
+    badgeLabel: 'Amazon.es',
+    disclosureShort:
+      'Affiliate-Links · Als Amazon-Partner verdiene ich an qualifizierten Verkäufen über Amazon.es.',
+    byModule: {
+      percentages: {
+        title: 'Empfohlene Tools für MwSt., Preise & Margen',
+        subtitle: 'Praktische Schreibtischhelfer passend zu Ihren Rabatt- und Steuerberechnungen',
+        items: [
+          {
+            title: 'Kaufmännischer Tischrechner mit Steuertasten',
+            category: 'MwSt. & Kalkulation',
+            description:
+              'Solar-Tischrechner mit dedizierten TAX+/TAX−-Tasten und Margenberechnung für schnelle Belegprüfungen.',
+            href: buildAmazonEsSearchUrl('calculadora financiera oficina impuestos'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+          {
+            title: 'Kassenbuch für Einnahmen, Ausgaben & MwSt.',
+            category: 'Selbstständige & KMU',
+            description:
+              'Strukturiertes Buchführungstagebuch für Nettobeträge, Steueranteile und tägliche Belege.',
+            href: buildAmazonEsSearchUrl('libro contabilidad ingresos gastos autonomos'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+          {
+            title: '12-stelliger Büro-Tischrechner mit Großdisplay',
+            category: 'Handel & Büro',
+            description:
+              'Geneigtes, gut ablesbares Display mit direkter Prozent- und Gesamtsummentaste.',
+            href: buildAmazonEsSearchUrl('calculadora escritorio 12 digitos gran pantalla'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+        ],
+      },
+      distribution: {
+        title: 'Nützliche Helfer für gemeinsame Budgets & Belege',
+        subtitle: 'Physische Organizer für Gruppenrechnungen, Reisen und Haushaltskassen',
+        items: [
+          {
+            title: 'Budget-Organizer mit Umschlägen & Sparblättern',
+            category: 'Haushalt & Reisen',
+            description:
+              'Ordner mit Reißverschlusstaschen zur übersichtlichen Aufteilung gemeinsamer Ausgaben.',
+            href: buildAmazonEsSearchUrl('carpeta presupuesto ahorro sobres gastos'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+          {
+            title: 'Fächermappe für Rechnungen & Quittungen',
+            category: 'Belegablage',
+            description:
+              'Ausziehbare Dokumentenmappe zum Sortieren von WG-, Reise- und Lieferantenbelegen.',
+            href: buildAmazonEsSearchUrl('archivador acordeon facturas recibos'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+          {
+            title: '12-stelliger Doppelanzeige-Tischrechner',
+            category: 'Gegenprüfung',
+            description:
+              'Prüfen Sie aufgeteilte Beträge und Einzelposten bequem direkt am Schreibtisch.',
+            href: buildAmazonEsSearchUrl('calculadora escritorio 12 digitos doble pantalla'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+        ],
+      },
+      'rule-of-three': {
+        title: 'Empfohlene Messgeräte für Skalierung & Dreisatz',
+        subtitle: 'Präzisionswerkzeuge für Rezepte, Heimwerken, Baustelle und Studium',
+        items: [
+          {
+            title: 'Digitale Präzisions-Küchenwaage (1 g)',
+            category: 'Rezepte & Verhältnisse',
+            description:
+              'Edelstahlwaage mit Tarafunktion zum exakten Hoch- und Herunterrechnen von Zutaten.',
+            href: buildAmazonEsSearchUrl('bascula cocina digital precision gramos'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+          {
+            title: 'Laser-Entfernungsmesser für Bau & DIY',
+            category: 'Renovierung & Handwerk',
+            description:
+              'Messen Sie Raumflächen exakt aus, um Farbbedarf, Materialmengen und Zeiten zu berechnen.',
+            href: buildAmazonEsSearchUrl('medidor laser distancia obra bricolaje'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+          {
+            title: 'Wissenschaftlicher Taschenrechner (Brüche)',
+            category: 'Schule & Technik',
+            description:
+              'Natürliche Darstellung für Brüche, Verhältnisse und technische Umrechnungen.',
+            href: buildAmazonEsSearchUrl('calculadora cientifica casio fx'),
+            ctaLabel: 'Bei Amazon.es ansehen',
+          },
+        ],
+      },
+    },
+  },
   seoSection: {
     examplesTitle: 'Gelöste Praxisbeispiele Schritt für Schritt',
     examplesSubtitle:
@@ -524,38 +623,50 @@ export const de: TranslationDictionary = {
           'Nein. Alle Berechnungen laufen zu 100 % lokal im Browser. Der letzte Stand wird nur im localStorage gespeichert und beim Teilen in der URL kodiert.',
       },
     ],
-    resourcesTitle: 'Empfohlene Werkzeuge & Ressourcen',
-    resourcesDisclosure: 'Redaktionelle Auswahl · Externe und Affiliate-Links',
+    resourcesTitle: 'Empfohlene Ausstattung & Werkzeuge auf Amazon.es',
+    resourcesDisclosure: 'Affiliate-Auswahl · Links ausschließlich zu Amazon.es',
+    resourcesLegalNotice:
+      'Affiliate-Hinweis: Als Amazon-Partner verdiene ich an qualifizierten Verkäufen. Alle Produktempfehlungen verweisen ausschließlich auf www.amazon.es.',
     resources: [
       {
-        title: 'Wissenschaftliche und kaufmännische Tischrechner',
-        category: 'Büroausstattung',
+        title: 'Kaufmännische und Finanz-Tischrechner',
+        category: 'Büro & Steuern',
         description:
           'Solarbetriebene Zweizeilen-Rechner mit direkter Prozent- und Steuertaste für Handel und Selbstständige.',
-        href: 'https://www.amazon.es/s?k=calculadora+financiera+oficina',
-        ctaLabel: 'Modelle ansehen',
+        href: buildAmazonEsSearchUrl('calculadora financiera oficina casio'),
+        ctaLabel: 'Bei Amazon.es ansehen',
       },
       {
-        title: 'Rechnungssoftware mit automatischer MwSt.-Berechnung',
-        category: 'Buchhaltung & KMU',
+        title: 'Wissenschaftliche Rechner für Dreisatz & Studium',
+        category: 'Schule & Technik',
         description:
-          'Automatisieren Sie Angebote, wiederkehrende Rechnungen und vierteljährliche Steuerberichte.',
-        href: 'https://www.holded.com/es',
-        ctaLabel: 'Plattform ansehen',
+          'Rechner mit natürlicher Bruchdarstellung für Proportionen, Umrechnungen und Naturwissenschaften.',
+        href: buildAmazonEsSearchUrl('calculadora cientifica escolar universidad'),
+        ctaLabel: 'Bei Amazon.es ansehen',
       },
       {
-        title: 'Kollaborative Cloud-Tabellenkalkulation',
-        category: 'Produktivität',
+        title: 'Kassen- und Ausgabenbücher für Belege',
+        category: 'Buchhaltung & Haushalt',
         description:
-          'Erstellen Sie monatliche Vorlagen für geteilte Ausgaben und Budgetaufteilungen in Echtzeit.',
-        href: 'https://workspace.google.com/intl/es/products/sheets/',
-        ctaLabel: 'Google Sheets öffnen',
+          'Physische Kontobücher und Belegordner für gemeinsame Ausgaben, Quittungen und Steuerübersichten.',
+        href: buildAmazonEsSearchUrl('libro contabilidad ingresos gastos autonomos'),
+        ctaLabel: 'Bei Amazon.es ansehen',
+      },
+      {
+        title: 'Digitale Präzisionswaagen auf das Gramm genau',
+        category: 'Küche & Werkstatt',
+        description:
+          'Ideal, um Rezepte oder Mischungsverhältnisse per Dreisatz exakt abzuwiegen.',
+        href: buildAmazonEsSearchUrl('bascula cocina digital precision gramos'),
+        ctaLabel: 'Bei Amazon.es ansehen',
       },
     ],
   },
   footer: {
     tagline:
       '100 % lokale deterministische Berechnungen im Browser · Dreisatz, Rückwärts-Prozent und centgenaue Aufteilung.',
+    affiliateNotice:
+      'Affiliate-Hinweis: Als Amazon-Partner verdiene ich an qualifizierten Verkäufen über die Produktlinks zu Amazon.es.',
     navAria: 'Fußzeilen-Navigation',
     linkPercentages: 'Rückwärts-Prozent & MwSt.',
     linkDistribution: 'Proportionale Aufteilung',

@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { ChevronDown, ExternalLink } from 'lucide-react';
+import { ChevronDown, ExternalLink, ShoppingBag } from 'lucide-react';
+import {
+  AMAZON_LINK_REL,
+  AMAZON_LINK_TARGET,
+  enforceAmazonEsAffiliateUrl,
+} from '../config/affiliate';
 import { TranslationDictionary } from '../i18n';
 import { ModuleId } from '../types/calculator';
 
@@ -176,39 +181,49 @@ export function SeoAndFaqSection({
         </div>
       </div>
 
-      {/* Discreet Affiliate / Recommended Resources Block */}
+      {/* Curated Amazon.es Gear & Legal Affiliate Disclosure */}
       <aside
         aria-label={s.resourcesTitle}
         className="no-print rounded-md border border-[#D6CFC2] bg-[#FCFBF7] p-5 sm:p-6 space-y-4"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#D6CFC2] pb-3">
-          <h2 className="font-display text-lg font-bold text-[#18181B]">{s.resourcesTitle}</h2>
-          <p className="text-xs text-[#52524E]">{s.resourcesDisclosure}</p>
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-[#C2410C] shrink-0" aria-hidden="true" />
+            <h2 className="font-display text-lg font-bold text-[#18181B]">{s.resourcesTitle}</h2>
+          </div>
+          <p className="font-mono-num text-[11px] font-medium text-[#52524E]">{s.resourcesDisclosure}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {s.resources.map((item) => (
-            <a
-              key={item.title}
-              href={item.href}
-              target="_blank"
-              rel="sponsored nofollow noopener"
-              className="group rounded-sm border border-[#D6CFC2] bg-[#F3EFE6]/50 p-4 flex flex-col justify-between gap-3 hover:border-[#18181B] hover:bg-[#FFFFFF] transition-colors"
-            >
-              <div className="space-y-1.5">
-                <p className="font-mono-num text-[11px] font-medium text-[#52524E]">{item.category}</p>
-                <h3 className="text-sm font-bold text-[#18181B] group-hover:text-[#C2410C] transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-[#52524E] leading-relaxed">{item.description}</p>
-              </div>
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C2410C]">
-                <span>{item.ctaLabel}</span>
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-              </span>
-            </a>
-          ))}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {s.resources.map((item) => {
+            const safeHref = enforceAmazonEsAffiliateUrl(item.href);
+            return (
+              <a
+                key={item.title}
+                href={safeHref}
+                target={AMAZON_LINK_TARGET}
+                rel={AMAZON_LINK_REL}
+                className="group rounded-sm border border-[#D6CFC2] bg-[#F3EFE6]/50 p-4 flex flex-col justify-between gap-3 hover:border-[#18181B] hover:bg-[#FFFFFF] transition-colors"
+              >
+                <div className="space-y-1.5">
+                  <p className="font-mono-num text-[11px] font-medium text-[#52524E]">{item.category}</p>
+                  <h3 className="text-sm font-bold text-[#18181B] group-hover:text-[#C2410C] transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-[#52524E] leading-relaxed">{item.description}</p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C2410C]">
+                  <span>{item.ctaLabel}</span>
+                  <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                </span>
+              </a>
+            );
+          })}
         </div>
+
+        <p className="border-t border-[#D6CFC2] pt-3 text-[11px] text-[#52524E] leading-relaxed">
+          {s.resourcesLegalNotice}
+        </p>
       </aside>
     </section>
   );

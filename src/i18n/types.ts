@@ -338,6 +338,19 @@ export interface TranslationDictionary {
     ifWord: string;
     forWord: string;
   };
+  contextualAffiliate: {
+    ariaLabel: string;
+    badgeLabel: string;
+    disclosureShort: string;
+    byModule: Record<
+      ModuleId,
+      {
+        title: string;
+        subtitle: string;
+        items: RecommendedResourceItem[];
+      }
+    >;
+  };
   seoSection: {
     examplesTitle: string;
     examplesSubtitle: string;
@@ -357,10 +370,12 @@ export interface TranslationDictionary {
     faqItems: FaqItem[];
     resourcesTitle: string;
     resourcesDisclosure: string;
+    resourcesLegalNotice: string;
     resources: RecommendedResourceItem[];
   };
   footer: {
     tagline: string;
+    affiliateNotice: string;
     navAria: string;
     linkPercentages: string;
     linkDistribution: string;
